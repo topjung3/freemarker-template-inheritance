@@ -4,6 +4,7 @@ import freemarker.core.Environment;
 import freemarker.template.*;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Map;
 
 import static kr.pe.kwonnam.freemarker.inheritance.BlockDirectiveUtils.*;
@@ -22,7 +23,18 @@ public class PutDirective implements TemplateDirectiveModel {
     public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
         String blockName = getBlockName(env, params, PUT_BLOCK_NAME_PARAMETER);
         PutType putType = getPutType(params);
-        String bodyResult = getBodyResult(body);
+        String includePath = params.containsKey("include") ? params.get("include").toString() : null;
+
+        String bodyResult;
+
+        if (includePath != null) {
+            StringWriter writer = new StringWriter();
+            env.getTemplateForImporting(includePath).dump(writer);
+//            env.getTemplateForInclusion(includePath, "UTF-8", true).dump(writer);
+            bodyResult = writer.toString();
+        } else {
+            bodyResult = getBodyResult(body);
+        }
 
         env.setVariable(getBlockContentsVarName(blockName), new SimpleScalar(bodyResult));
         env.setVariable(getBlockTypeVarName(blockName), new SimpleScalar(putType.name()));

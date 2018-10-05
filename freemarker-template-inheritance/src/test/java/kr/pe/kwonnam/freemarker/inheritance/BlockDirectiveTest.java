@@ -13,6 +13,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class BlockDirectiveTest extends AbstractDirectiveTest {
 
     @Test
+    public void block_include() {
+        String result = processTemplate("include/block_include.ftl");
+
+        assertThat("Append 방식 Block", result, is("{[BlockContents - haha]}"));
+        System.out.println("block_append : " + result);
+    }
+
+    @Test
     public void block_append() {
         String result = processTemplate("block_append.ftl");
 
